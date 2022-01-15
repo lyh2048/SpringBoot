@@ -1,56 +1,24 @@
-# SpringBoot
-## 简介
+package com.example.config;
 
-Spring Boot 与时下流行技术的整合
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-## 内容
+import java.time.Duration;
 
-### Spring Boot 整合 Redis
-
-1、引入依赖
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-data-redis</artifactId>
-</dependency>
-
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-pool2</artifactId>
-</dependency>
-```
-
-2、Redis配置
-
-```yaml
-spring:
-  redis:
-    # Redis服务器地址
-    host: 192.168.108.128
-    # Redis服务器连接端口
-    port: 6379
-    # 数据库索引
-    database: 0
-    # 连接超时时间
-    timeout: 1800000
-    lettuce:
-      pool:
-        # 最大连接数
-        max-active: 20
-        # 最大阻塞时间
-        max-wait: 1
-        # 最大空闲连接
-        max-idle: 5
-        # 最小空闲连接
-        min-idle: 0
-```
-
-
-
-3、Redis配置类
-
-```java
 @Configuration
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport {
@@ -86,26 +54,3 @@ public class RedisConfig extends CachingConfigurerSupport {
                 .build();
     }
 }
-```
-
-
-
-4、测试
-
-```java
-@RestController
-@RequestMapping("/redisTest")
-public class RedisTestController {
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @GetMapping
-    public String testRedis() {
-        // 设置值
-        redisTemplate.opsForValue().set("name", "lyh");
-        // 获取值
-        return (String) redisTemplate.opsForValue().get("name");
-    }
-}
-```
-

@@ -118,3 +118,90 @@ public class RedisTestController {
 
 [⬆回到顶部](#内容)
 
+### Spring Boot 使用Kryo作为Redis序列化工具
+
+在Java应用中，所有对象的创建都是在内存中完成的，当应用需要保存对象到磁盘文件或通过网络发送给其他应用时，需要将对象信息转化成二进制字节流，这个从对象状态转化成二进制字节流的过程，就是序列化。相反，从字节流创建成对象的过程就是反序列化。
+
+将Java对象实例存入Redis，常用方法有两种：
+
+1. 将对象序列化成字符串后存入Redis
+2. 将对象序列化成byte数组后存入Redis
+
+Kryo是一个快速且高效的针对Java对象序列化的框架，它的特点：
+
+- 序列化的性能非常高
+- 序列化结果体积小
+- 提供简单易用的API
+
+基于Kryo的序列化接口实现类
+
+```java
+package com.example.serializer;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
+
+import java.io.ByteArrayOutputStream;
+
+/**
+ * 自定义序列化工具类
+ */
+
+@Slf4j
+public class KryoRedisSerializer<T> implements RedisSerializer<T> {
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    private static final ThreadLocal<Kryo> kryos = ThreadLocal.withInitial(Kryo::new);
+    private final Class<T> clazz;
+
+    public KryoRedisSerializer(Class<T> clazz) {
+        super();
+        this.clazz = clazz;
+    }
+
+
+    @Override
+    public byte[] serialize(T t) throws SerializationException {
+        if (t == null) {
+            return EMPTY_BYTE_ARRAY;
+        }
+        Kryo kryo = kryos.get();
+        kryo.setReferences(false);
+        kryo.register(clazz);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Output output = new Output(baos)) {
+            kryo.writeClassAndObject(output, t);
+            output.flush();
+            return baos.toByteArray();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return EMPTY_BYTE_ARRAY;
+    }
+
+    @Override
+    public T deserialize(byte[] bytes) throws SerializationException {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        Kryo kryo = kryos.get();
+        kryo.setReferences(false);
+        kryo.register(clazz);
+        try (Input input = new Input(bytes)) {
+            return (T) kryo.readClassAndObject(input);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
+}
+
+```
+
+
+
+[⬆回到顶部](#内容)
+

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>豆瓣电影</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" th:href="@{/favicon.ico}">
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="nav navbar-nav">
+        <li><a href="https://www.douban.com/" target="_blank">豆瓣</a></li>
+        <li><a href="https://book.douban.com/" target="_blank">读书</a></li>
+        <li><a href="https://movie.douban.com/" target="_blank">电影</a></li>
+        <li><a href="https://music.douban.com/" target="_blank">音乐</a></li>
+        <li><a href="https://www.douban.com/location/" target="_blank">同城</a></li>
+        <li><a href="https://www.douban.com/group/explore" target="_blank">小组</a></li>
+        <li><a href="https://read.douban.com/?dcs=top-nav&dcm=douban" target="_blank">阅读</a></li>
+        <li><a href="https://fm.douban.com" target="_blank">FM</a></li>
+        <li><a href="https://m.douban.com/time/?dt_time_source=douban-web_top_nav" target="_blank">时间</a></li>
+        <li>
+          <a href="https://market.douban.com/?utm_campaign=douban_top_nav&utm_source=douban&utm_medium=pc_web"
+             target="_blank">豆品</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="app">
+  <div class="container container-top">
+    <div class="row search-bar">
+      <div class="pull-left nav-logo">
+        <a href="https://movie.douban.com">豆瓣电影</a>
+      </div>
+      <div class="col-lg-5 col-md-6 col-xs-6 pull-left">
+        <div class="input-group search-wrap">
+          <input v-model="keyword" id="searchInput" type="text" class="form-control"
+                 placeholder="搜索电影、电视剧、综艺、影人">
+          <span class="input-group-btn">
+              <button id="searchBtn" @click.prevent="searchKey" class="btn btn-default" type="submit">
+                <i class="glyphicon glyphicon-search"></i>
+              </button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="container">
+    <ul class="nav nav-pills">
+      <li role="presentation"><a href="https://movie.douban.com/cinema/">影讯&购票</a></li>
+      <li role="presentation"><a
+              href="https://movie.douban.com/explore#!type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0">选电影</a>
+      </li>
+      <li role="presentation"><a
+              href="https://movie.douban.com/tv/#!type=tv&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0">电视剧</a>
+      </li>
+      <li role="presentation"><a href="https://movie.douban.com/chart">排行榜</a></li>
+      <li role="presentation"><a href="https://movie.douban.com/tag/#/">分类</a></li>
+      <li role="presentation"><a href="https://movie.douban.com/review/best/">影评</a></li>
+      <li role="presentation"><a href="https://movie.douban.com/annual/2019?source=navigation">2020年度榜单</a></li>
+      <li role="presentation"><a href="https://m.douban.com/standbyme/annual2019?source=navigation">2020观影报告</a>
+      </li>
+    </ul>
+  </div>
+  <hr>
+  <div class="container2">
+    <div class="movie-card" v-for="(result, index) in res" :key="index">
+      <div class="movie-header">
+        <img :src="result.img" height="367px" width="100%">
+      </div>
+      <div class="movie-content">
+        <div class="movie-content-header">
+          <a :href="result.mUrl" target="_blank">
+            <h5 class="movie-title" v-html="result.title"></h5>
+          </a>
+          <div class="imax-logo"></div>
+        </div>
+        <div class="movie-info">
+          <div class="info-section">
+            <label>评分：{{ result.score }}</label>
+          </div>
+        </div>
+        <p>简介：{{ result.detail }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/vue.js}"></script>
+<script th:src="@{/js/axios.min.js}"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      keyword: '',
+      res: [],
+    },
+    methods: {
+      searchKey() {
+        let keyword = this.keyword
+        axios.get(`/search/${keyword}/1/20`).then(response => {
+          this.res = response.data
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    }
+  })
+</script>
+</body>
+</html>

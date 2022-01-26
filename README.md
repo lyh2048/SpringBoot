@@ -205,3 +205,124 @@ public class KryoRedisSerializer<T> implements RedisSerializer<T> {
 
 [⬆回到顶部](#内容)
 
+### Spring Boot 整合 Elasticsearch
+
+Elasticsearch 是一个`实时`的`分布式存储`、`搜索`、`分析`的引擎。
+
+Elasticsearch的一些常见术语：
+
+- Index：Elasticsearch的Index相当于数据库的Table
+- Type：这个在新的Elasticsearch版本已经废除（在以前的Elasticsearch版本，一个Index下支持多个Type）
+- Document：Document相当于数据库的一行记录
+- Field：相当于数据库的Column的概念
+- Mapping：相当于数据库的Schema的概念
+- DSL：相当于数据库的SQL
+
+引入依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+</dependency>
+```
+
+配置
+
+```java
+@Configuration
+public class ElasticSearchConfig {
+    @Bean
+    public RestHighLevelClient restHighLevelClient() {
+        return new RestHighLevelClient(
+                RestClient.builder(
+                        new HttpHost("127.0.0.1", 9200, "http")
+                )
+        );
+    }
+}
+```
+
+分页——分词——高亮
+
+```java
+@Service
+public class MovieService {
+    @Resource
+    private RestHighLevelClient restHighLevelClient;
+
+    public boolean parseMovie(String keyword) throws IOException {
+        GetIndexRequest getIndexRequest = new GetIndexRequest(Constants.INDEX_NAME);
+        boolean flag = restHighLevelClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
+        if (!flag) {
+            // 创建索引
+            CreateIndexRequest createIndexRequest = new CreateIndexRequest(Constants.INDEX_NAME);
+            restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+        }
+        List<Movie> movieList = HtmlUtils.getMovieList(keyword);
+        BulkRequest bulkRequest = new BulkRequest();
+        bulkRequest.timeout(TimeValue.timeValueMillis(1));
+        for (Movie movie : movieList) {
+            bulkRequest.add(
+                    new IndexRequest(Constants.INDEX_NAME)
+                            .source(JSON.toJSONString(movie), XContentType.JSON)
+            );
+        }
+        // 提交
+        BulkResponse bulkResponse = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        boolean hasFailures = false;
+        try {
+            hasFailures = !bulkResponse.hasFailures();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return hasFailures;
+    }
+
+    public List<Map<String, Object>> searchResults(String keyword, int page, int size) throws IOException {
+        List<Map<String, Object>> list = new ArrayList<>();
+        if (page <= 1) {
+            page = 1;
+        }
+        // 条件搜索
+        SearchRequest searchRequest = new SearchRequest(Constants.INDEX_NAME);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.from(page);
+        searchSourceBuilder.size(size);
+        // 分词
+        QueryStringQueryBuilder queryBuilder = QueryBuilders.queryStringQuery(keyword);
+        searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder.timeout(TimeValue.timeValueMillis(1));
+        // 高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("title");
+        highlightBuilder.preTags("<span style='color:red'>");
+        highlightBuilder.postTags("</span>");
+        searchSourceBuilder.highlighter(highlightBuilder);
+        // 搜索
+        searchRequest.source(searchSourceBuilder);
+        // 解析结果
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        for (SearchHit hit : searchResponse.getHits()) {
+            Map<String, HighlightField> highlightFieldMap = hit.getHighlightFields();
+            HighlightField title = highlightFieldMap.get("title");
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            if (title != null) {
+                Text[] fragments = title.fragments();
+                StringBuilder builder = new StringBuilder();
+                for (Text text : fragments) {
+                    builder.append(text);
+                }
+                // 替换
+                sourceAsMap.put("title", builder.toString());
+            }
+            list.add(sourceAsMap);
+        }
+        return list;
+    }
+}
+```
+
+
+
+[⬆回到顶部](#内容)

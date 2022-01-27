@@ -10,6 +10,8 @@
 
 Spring Boot 与时下流行技术的整合
 
+> 由于能力有限，若有错误或者不当之处，还请大家批评指正，一起学习交流！
+
 ## 内容
 
 ### Spring Boot 整合 Redis
@@ -349,3 +351,68 @@ Json Web令牌以紧凑的形式由三部分组成，这些部分由点（`.`）
 
 
 [⬆回到顶部](#内容)
+
+### 基于Spring Security 和 JWT 的权限系统
+
+Spring Security 可以为Spring应用提供声明式的安全访问控制，提供了一系列可以在Spring应用上下文中可配置的Bean，并利用Spring IOC 和 AOP等功能特性来为应用系统提供声明式的安全访问控制功能，减少了诸多重复工作。
+
+角色表`role`
+
+| id   | name        |
+| ---- | ----------- |
+| 1    | ROLE_NORMAL |
+| 2    | ROLE_ADMIN  |
+
+用户表`user`
+
+| id   | username | password                                                     |
+| ---- | -------- | ------------------------------------------------------------ |
+| 1    | lyh      | `$2a$10$3wz3ngnLKwJKIv4SIRtqReynm/bNzLFWov.nK0XvXnjXcPGjgnDf.` |
+
+用户和角色一对多的关联表`user_roles`
+
+| user_id | roles_id |
+| ------- | -------- |
+| 1       | 1        |
+| 1       | 2        |
+
+Token过滤器
+
+```java
+@Component
+public class JwtTokenFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtTokenUtils jwtTokenUtils;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String authHeader = request.getHeader(Constants.HEADER_STRING);
+        if (null != authHeader && authHeader.startsWith(Constants.TOKEN_PREFIX)) {
+            String authToken = authHeader.substring(Constants.TOKEN_PREFIX.length());
+            String username = jwtTokenUtils.getUsernameFromToken(authToken);
+            if (null != username && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtTokenUtils.validateToken(authToken, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
+}
+```
+
+参考资料：
+
+[https://mp.weixin.qq.com/s/sMi1__Rw_s75YDaIdmTWKw](https://mp.weixin.qq.com/s/sMi1__Rw_s75YDaIdmTWKw)
+
+
+
+[⬆回到顶部](#内容)
+

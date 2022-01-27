@@ -416,3 +416,34 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 [⬆回到顶部](#内容)
 
+### Spring Boot使用Guava Cache本地缓存
+
+> Guava Cache 是一个全内存的本地缓存实现，而且提供了线程安全机制，所以特别适合于代码中已经预料到某些值会被多次调用的场景
+
+`@Cacheable`：配置在方法上表示其返回值将被加入缓存，同时在查询时，会先从缓存中获取，若不存在才发起对数据库的访问
+
+`@CachePut`：配置于方法上时，能够根据参数定义条件来进行缓存，其与`@Cacheable`不同的是使用`@CachePut`标注的方法在执行前不会去检查缓存中是否存在之前执行过的结果，而是每次都会执行该方法，并将执行结果以键值对的形式存入指定的缓存中，所以主要用于数据新增和修改操作上
+
+`@CacheEvict`： 配置于方法上，表示从缓存中移除相应的数据
+
+```java
+@Configuration
+@EnableCaching
+public class GuavaCacheConfig {
+    @Bean
+    public CacheManager cacheManager() {
+        GuavaCacheManager cacheManager = new GuavaCacheManager();
+        cacheManager.setCacheBuilder(
+                CacheBuilder.newBuilder()
+                .expireAfterWrite(60, TimeUnit.SECONDS)
+                .maximumSize(1000)
+        );
+        return cacheManager;
+    }
+}
+```
+
+
+
+[⬆回到顶部](#内容)
+

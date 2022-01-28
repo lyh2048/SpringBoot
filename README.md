@@ -447,3 +447,28 @@ public class GuavaCacheConfig {
 
 [⬆回到顶部](#内容)
 
+### Spring Boot 集成Shiro权限管理
+
+`Apache Shiro`是一个Java的安全框架，可以帮助我们完成：认证、授权、加密、会话管理、与Web集成、缓存等。
+
+实现用户登录认证和授权访问页面
+
+测试账号：
+
+| 用户名 | 密码     |
+| ------ | -------- |
+| admin  | 12345678 |
+| aix    | 12345678 |
+
+根据登录用户的不同，显示不同的菜单项
+
+admin登录后可以看到用户管理菜单，aix登录后可以看到应用管理等业务菜单
+
+参考资料
+
+[https://www.xncoding.com/2017/07/07/spring/sb-shiro.html](https://www.xncoding.com/2017/07/07/spring/sb-shiro.html)
+
+
+
+[⬆回到顶部](#内容)
+

@@ -17,6 +17,7 @@
     * [Spring Boot使用Guava Cache本地缓存](#spring-boot使用guava-cache本地缓存)
     * [Spring Boot 集成Shiro权限管理](#spring-boot-集成shiro权限管理)
     * [Spring Boot JPA 入门](#spring-boot-jpa-入门)
+    * [Spring Boot 使用JdbcTemplate访问数据库](#Spring-Boot-使用JdbcTemplate访问数据库)
 
 ## 简介
 
@@ -529,6 +530,24 @@ Spring Data JPA，是Spring Data提供的一套简化的JPA开发框架。
 参考资料
 
 [https://www.iocoder.cn/Spring-Boot/JPA/](https://www.iocoder.cn/Spring-Boot/JPA/)
+
+
+
+[⬆回到顶部](#内容)
+
+### Spring Boot 使用JdbcTemplate访问数据库
+
+`Spring Framework`对数据库的操作在`JDBC`上面做了深层次的封装，通过依赖注入功能，可以将`DataSource`注册到`JdbcTemplate`之中，使我们可以轻易的完成对象关系映射，并有助于规避常见的错误，在`Spring Boot`中，我们可以很轻松的使用它。
+
+特点：
+
+- 速度快，对比其它的ORM框架，JDBC的方式无异于是最快的
+- 配置简单，`Spring`自家出品，几乎没有额外配置
+- 学习成本低，毕竟`JDBC`是基础知识，`JdbcTemplate`更像是一个`DBUtils`
+
+参考资料：
+
+[https://www.iocoder.cn/Spring-Boot/battcn/v2-orm-jdbc/](https://www.iocoder.cn/Spring-Boot/battcn/v2-orm-jdbc/)
 
 
 

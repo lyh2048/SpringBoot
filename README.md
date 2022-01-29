@@ -472,3 +472,53 @@ admin登录后可以看到用户管理菜单，aix登录后可以看到应用管
 
 [⬆回到顶部](#内容)
 
+### Spring Boot JPA 入门
+
+[Spring Data JPA](https://spring.io/projects/spring-data-jpa)
+
+JPA，全称Java Persistence API，是由Java定义的Java ORM以及实体操作API标准。正如最早学习JDBC规范，Java自身并未提供相关的实现，而是MySQL提供MySQL `mysql-connector-java`驱动，Oracle提供`oracle-jdbc`驱动，而实现JPA规范的有：
+
+- Hibernate ORM
+- Oracle TopLink
+- Apache OpenJPA
+
+Spring Data JPA，是Spring Data提供的一套简化的JPA开发框架。
+
+- 内置CRUD、分页、排序等功能的操作
+- 根据约定好的方法名规则，自动生成对应的查询操作
+- 使用`@Query`注解，自定义SQL
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
+
+
+
+参考资料
+
+[https://www.iocoder.cn/Spring-Boot/JPA/](https://www.iocoder.cn/Spring-Boot/JPA/)
+
+
+
+[⬆回到顶部](#内容)
+

@@ -1,0 +1,15 @@
+spring:
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/test_db?useUnicode=true&useSSL=false&characterEncoding=utf8
+  # JPA 配置
+  jpa:
+    # 打印 SQL，生产环境建议关闭
+    show-sql: true
+    # Hibernate 配置
+    hibernate:
+      ddl-auto: none
+

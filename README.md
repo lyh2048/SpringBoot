@@ -18,6 +18,7 @@
     * [Spring Boot 集成Shiro权限管理](#spring-boot-集成shiro权限管理)
     * [Spring Boot JPA 入门](#spring-boot-jpa-入门)
     * [Spring Boot 使用JdbcTemplate访问数据库](#Spring-Boot-使用JdbcTemplate访问数据库)
+    * [Spring Boot 整合Thymeleaf模板](#Spring-Boot-整合Thymeleaf模板)
 
 ## 简介
 
@@ -548,6 +549,21 @@ Spring Data JPA，是Spring Data提供的一套简化的JPA开发框架。
 参考资料：
 
 [https://www.iocoder.cn/Spring-Boot/battcn/v2-orm-jdbc/](https://www.iocoder.cn/Spring-Boot/battcn/v2-orm-jdbc/)
+
+
+
+[⬆回到顶部](#内容)
+
+### Spring Boot 整合Thymeleaf模板
+
+`Thymeleaf`是现代化服务器端的Java模板引擎，不同与其它几种模板的是`Thymeleaf`的语法更加接近HTML，并且具有很高的扩展性。详细资料可以浏览[官网](https://www.thymeleaf.org/)。
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
 
 
 

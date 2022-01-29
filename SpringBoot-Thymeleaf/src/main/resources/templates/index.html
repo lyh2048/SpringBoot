@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}">Title</title>
+</head>
+<body>
+<h1 th:text="${description}">Hello World</h1>
+<h2>==== 作者信息 ====</h2>
+<p>姓名：<span th:text="${author.name}">张三</span></p>
+<p>手机：<span th:text="${author.phone}">17860787566</span></p>
+<p>邮箱：<span th:text="${author.email}">1046818625@qq.com</span></p>
+<h2>==== 作者信息 ====</h2>
+</body>
+</html>

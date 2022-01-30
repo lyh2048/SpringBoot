@@ -21,6 +21,7 @@
     * [Spring Boot 整合Thymeleaf模板](#Spring-Boot-整合Thymeleaf模板)
     * [Spring Boot Admin](#Spring-Boot-Admin)
     * [Spring Boot 文件上传](#Spring-Boot-文件上传)
+    * [Spring Boot 整合 WebSocket](#Spring-Boot-整合-WebSocket)
 
 ## 简介
 
@@ -672,6 +673,63 @@ public class FileUploadController {
         final byte[] bytes = Base64Utils.decodeFromString(d.length > 1 ? d[1] : d[0]);
         FileCopyUtils.copy(bytes, tempFile);
         return "上传成功";
+    }
+}
+```
+
+
+
+[⬆回到顶部](#内容)
+
+### Spring Boot 整合 WebSocket
+
+WebSocket是HTML5新增的一种在单个TCP连接上进行全双工通讯的协议，与HTTP协议没有太大的关系……
+
+在WebSocket API中，浏览器和服务器只需要做一个握手的动作，然后，浏览器和服务器之间就形成了一条快速通道。两者之间就可以直接数据相互传送。
+
+```java
+@RestController
+@ServerEndpoint("/chat-room/{username}")
+@Slf4j
+public class ChatRoomServer {
+    @GetMapping("/chat-room/{sender}/to/{receiver}")
+    public void onMessage(@PathVariable("sender") String sender, @PathVariable("receiver") String receiver, String message) {
+        WebSocketUtils.sendMessage(WebSocketUtils.LIVING_SESSIONS_CACHE.get(receiver), "[" + sender + "]" + "-> [" + receiver + "] : " + message);
+    }
+
+    @OnOpen
+    public void openSession(@PathParam("username") String username, Session session) {
+        WebSocketUtils.LIVING_SESSIONS_CACHE.put(username, session);
+        String message = "欢迎用户[" + username + "] 来到聊天室！";
+        log.info(message);
+        WebSocketUtils.sendMessageAll(message);
+    }
+
+    @OnMessage
+    public void onMessage(String message, @PathParam("username") String username) {
+        log.info(message);
+        WebSocketUtils.sendMessageAll("用户[" + username + "] : " + message);
+    }
+
+    @OnClose
+    public void onClose(@PathParam("username") String username, Session session) {
+        WebSocketUtils.LIVING_SESSIONS_CACHE.remove(username);
+        WebSocketUtils.sendMessageAll("用户[" + username + "] 已经离开聊天室了！");
+        try {
+            session.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @OnError
+    public void OnError(Session session, Throwable throwable) {
+        try {
+            session.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        throwable.printStackTrace();
     }
 }
 ```

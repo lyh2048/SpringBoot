@@ -19,6 +19,7 @@
     * [Spring Boot JPA 入门](#spring-boot-jpa-入门)
     * [Spring Boot 使用JdbcTemplate访问数据库](#Spring-Boot-使用JdbcTemplate访问数据库)
     * [Spring Boot 整合Thymeleaf模板](#Spring-Boot-整合Thymeleaf模板)
+    * [Spring Boot Admin](#Spring-Boot-Admin)
 
 ## 简介
 
@@ -562,6 +563,53 @@ Spring Data JPA，是Spring Data提供的一套简化的JPA开发框架。
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+
+
+
+[⬆回到顶部](#内容)
+
+### Spring Boot Admin
+
+> SBA 全称 Spring Boot Admin 是一个管理和监控 Spring Boot 应用程序的开源项目。分为admin-server 与 admin-client 两个组件，admin-server通过采集 actuator 端点数据，显示在 spring-boot-admin-ui 上，已知的端点几乎都有进行采集，通过 spring-boot-admin 可以动态切换日志级别、导出日志、监控各项指标……
+>
+> `Spring Boot Admin` 在对单一应用服务监控的同时也提供了集群监控方案，支持通过`eureka`、`consul`、`zookeeper`等注册中心的方式实现多服务监控与管理……
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-client</artifactId>
+</dependency>
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-server</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.jolokia</groupId>
+    <artifactId>jolokia-core</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <scope>test</scope>
 </dependency>
 ```
 

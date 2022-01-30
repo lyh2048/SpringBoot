@@ -14,7 +14,7 @@
     * [Spring Boot 整合 Elasticsearch](#spring-boot-整合-elasticsearch)
     * [Spring Boot 整合 JWT](#spring-boot-整合-jwt)
     * [基于Spring Security 和 JWT 的权限系统](#基于spring-security-和-jwt-的权限系统)
-    * [Spring Boot使用Guava Cache本地缓存](#spring-boot使用guava-cache本地缓存)
+    * [Spring Boot 使用Guava Cache本地缓存](#spring-boot使用guava-cache本地缓存)
     * [Spring Boot 集成Shiro权限管理](#spring-boot-集成shiro权限管理)
     * [Spring Boot JPA 入门](#spring-boot-jpa-入门)
     * [Spring Boot 使用JdbcTemplate访问数据库](#Spring-Boot-使用JdbcTemplate访问数据库)

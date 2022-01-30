@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传</title>
+</head>
+<body>
+<h2>单个文件上传</h2>
+<div>
+  <form action="/uploads/upload1" method="post" enctype="multipart/form-data">
+    <p>
+      文件：<input type="file" name="file" />
+      <input type="submit" value="上传" />
+    </p>
+  </form>
+</div>
+
+<h2>多个文件上传</h2>
+<div>
+  <form action="/uploads/upload2" enctype="multipart/form-data" method="post">
+    <p>
+      文件1：<input type="file" name="file" />
+    </p>
+    <p>
+      文件2：<input type="file" name="file" />
+    </p>
+    <p>
+      <input type="submit" value="上传" />
+    </p>
+  </form>
+</div>
+<h2>Base64文件上传</h2>
+<div>
+  <form action="/uploads/upload3" method="post">
+    <p>Base64编码：</p>
+    <p>
+      <textarea name="base64" rows="10" cols="80"></textarea>
+    </p>
+    <p>
+      <input type="submit" value="上传" />
+    </p>
+  </form>
+</div>
+</body>
+</html>

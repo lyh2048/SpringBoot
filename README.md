@@ -22,7 +22,7 @@
     * [Spring Boot Admin](#Spring-Boot-Admin)
     * [Spring Boot 文件上传](#Spring-Boot-文件上传)
     * [Spring Boot 整合 WebSocket](#Spring-Boot-整合-WebSocket)
-    * [Spring Boot 使用 FreeMarker 模板引擎](#Spring-Boot-使用 FreeMarker-模板引擎)
+    * [Spring Boot 使用 FreeMarker 模板引擎](#Spring-Boot-使用-FreeMarker-模板引擎)
 
 ## 简介
 

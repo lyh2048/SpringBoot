@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.main {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.item {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 250px;
+}
+
+.name {
+    font-size: medium;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.author {
+    color: #999;
+    font-size: small;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

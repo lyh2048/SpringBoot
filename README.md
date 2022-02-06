@@ -22,6 +22,7 @@
     * [Spring Boot Admin](#Spring-Boot-Admin)
     * [Spring Boot 文件上传](#Spring-Boot-文件上传)
     * [Spring Boot 整合 WebSocket](#Spring-Boot-整合-WebSocket)
+    * [Spring Boot 使用 FreeMarker 模板引擎](#Spring-Boot-使用 FreeMarker-模板引擎)
 
 ## 简介
 
@@ -738,3 +739,23 @@ public class ChatRoomServer {
 
 [⬆回到顶部](#内容)
 
+### Spring Boot 使用 FreeMarker 模板引擎
+
+FreeMarker 是一款用Java语言编写的模板引擎，它是基于模板文件生成其他文本的通用工具。
+
+特点：
+
+- 轻量级模板，不需要Servlet环境就可以很轻松的嵌入到应用程序中
+- 能生成各种文本，如html、xml、java等
+- 入门简单，它是用`Java`编写的，很多语法和`Java`相似
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-freemarker</artifactId>
+</dependency>
+```
+
+
+
+[⬆回到顶部](#内容)

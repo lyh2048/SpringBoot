@@ -23,6 +23,7 @@
     * [Spring Boot 文件上传](#Spring-Boot-文件上传)
     * [Spring Boot 整合 WebSocket](#Spring-Boot-整合-WebSocket)
     * [Spring Boot 使用 FreeMarker 模板引擎](#Spring-Boot-使用-FreeMarker-模板引擎)
+    * [Spring Boot 整合 Quartz](#Spring-Boot-整合-Quartz)
 
 ## 简介
 
@@ -759,3 +760,138 @@ FreeMarker 是一款用Java语言编写的模板引擎，它是基于模板文�
 
 
 [⬆回到顶部](#内容)
+
+### Spring Boot 整合 Quartz
+
+[![img](assets/1502865180289216.png)](http://www.quartz-scheduler.org/)
+
+> Quartz 是一个开源的作业调度框架，它完全由 Java 写成，并设计用于 J2SE 和 J2EE 应用中。它提供了巨大的灵活性而不牺牲简单性。你能够用它来为执行一个作业而创建简单的或复杂的调度。
+
+
+
+任务需求：每隔10分钟，获取冬奥奖牌榜，并将获取到的数据存入到MySQL数据库
+
+数据接口：`https://api.bilibili.com/x/esports/sports/season/getMedalTable?season_id=1&sort_type=1`
+
+```xml
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.6.3</version>
+    <relativePath/>
+</parent>
+```
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-quartz</artifactId>
+</dependency>
+```
+
+`application.yml`
+
+```yaml
+server:
+  port: 9000
+spring:
+  freemarker:
+    cache: false
+    suffix: .ftl
+  datasource:
+    business:
+      url: jdbc:mysql://localhost:3306/test_db?useUnicode=true&useSSL=false&characterEncoding=utf8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: 123456
+    quartz:
+      url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&useSSL=false&characterEncoding=utf8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: 123456
+  # Quartz 的配置
+  quartz:
+    scheduler-name: myScheduler # Scheduler 名字。默认为 schedulerName
+    job-store-type: jdbc # Job 存储器类型。默认为 memory 表示内存，可选 jdbc 使用数据库。
+    auto-startup: true # Quartz 是否自动启动
+    startup-delay: 0 # 延迟 N 秒启动
+    wait-for-jobs-to-complete-on-shutdown: true # 应用关闭时，是否等待定时任务执行完成。默认为 false ，建议设置为 true
+    overwrite-existing-jobs: false # 是否覆盖已有 Job 的配置
+    properties: # 添加 Quartz Scheduler 附加属性
+      org:
+        quartz:
+          # JobStore 相关配置
+          jobStore:
+            # 数据源名称
+            dataSource: quartzDataSource # 使用的数据源
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: qrtz_ # Quartz 表前缀
+            isClustered: true # 是集群模式
+            clusterCheckinInterval: 1000
+            useProperties: false
+          # 线程池相关配置
+          threadPool:
+            threadCount: 25 # 线程池大小。默认为 10 。
+            threadPriority: 5 # 线程优先级
+            class: org.quartz.simpl.SimpleThreadPool # 线程池类型
+    jdbc: # 使用 JDBC 的 JobStore 的时候，JDBC 的配置
+      initialize-schema: never # 是否自动使用 SQL 初始化 quartz 表结构。
+
+mybatis:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  type-aliases-package: com.example.demo.entity
+
+logging:
+  level:
+    com:
+      example:
+        demo:
+          mapper: debug
+          controller: debug
+```
+
+任务：
+
+```java
+@DisallowConcurrentExecution
+@Slf4j
+public class MedalDataJob extends QuartzJobBean {
+    @Autowired
+    private MedalService medalService;
+
+    @Override
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+        log.info("任务开始执行");
+        // 获取数据
+        List<Medal> medalList = medalService.getMedalData();
+        // 将数据保存到数据库
+        for (Medal medal : medalList) {
+            // 判断数据是否存在
+            Medal medalByName = medalService.findMedalByName(medal.getName());
+            if (medalByName == null) {
+                medal.setId(null);
+                int i = medalService.saveMedal(medal);
+                if (i > 0) {
+                    log.info("数据[" + medal + "]插入成功");
+                }
+            } else {
+                medal.setId(medalByName.getId());
+                int i = medalService.updateMedal(medal);
+                if (i > 0) {
+                    log.info("数据[" + medal + "]更新成功");
+                }
+            }
+        }
+        log.info("任务执行结束");
+    }
+}
+```
+
+
+
+效果展示：
+
+![image-20220209115145878](assets/image-20220209115145878.png)
+
+[⬆回到顶部](#内容)
+

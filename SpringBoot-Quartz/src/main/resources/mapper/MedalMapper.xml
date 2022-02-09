@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MedalMapper">
+    <insert id="insertMedal" keyProperty="id" parameterType="com.example.demo.entity.Medal" useGeneratedKeys="true">
+        insert into medal (name, img, gold, silver, bronze, total, gold_rank, total_rank)
+        values (#{name}, #{img}, #{gold}, #{silver}, #{bronze}, #{total}, #{goldRank}, #{totalRank})
+    </insert>
+    <select id="selectMedalByName" resultType="com.example.demo.entity.Medal">
+        select id, name, img, gold, silver, bronze, total, gold_rank, total_rank
+        from medal
+        where name = #{name}
+    </select>
+    <update id="updateMedalById">
+        update medal set
+            name = #{name},
+            img = #{img},
+            gold = #{gold},
+            silver = #{silver},
+            bronze = #{bronze},
+            total = #{total},
+            gold_rank = #{goldRank},
+            total_rank = #{totalRank}
+        where id = #{id}
+    </update>
+
+    <select id="selectAll" resultType="com.example.demo.entity.Medal">
+        select id, name, img, gold, silver, bronze, total, gold_rank, total_rank
+        from medal
+        <if test="orderMode == 0">
+            order by gold_rank
+        </if>
+        <if test="orderMode == 1">
+            order by total_rank
+        </if>
+    </select>
+</mapper>

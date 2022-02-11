@@ -25,6 +25,7 @@
     * [Spring Boot 使用 FreeMarker 模板引擎](#Spring-Boot-使用-FreeMarker-模板引擎)
     * [Spring Boot 整合 Quartz](#Spring-Boot-整合-Quartz)
     * [Spring Boot 分布式限流](#Spring-Boot-分布式限流)
+    * [Spring Boot 分布式锁](#Spring-Boot-分布式锁)
 
 ## 简介
 
@@ -1000,6 +1001,68 @@ public class LimitAspect {
         }
     }
 
+}
+```
+
+
+
+[⬆回到顶部](#内容)
+
+### Spring Boot 分布式锁
+
+利用`自定义注解`、`AOP`、`Redis Cache`实现分布式锁
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+```
+
+```java
+@Aspect
+@Configuration
+public class LockAspect {
+    @Autowired
+    private StringRedisTemplate lockRedisTemplate;
+
+    @Autowired
+    private CacheKeyGenerator cacheKeyGenerator;
+
+    @Around("execution(public * *(..)) && @annotation(com.example.demo.annotation.CacheLock)")
+    public Object interceptor(ProceedingJoinPoint pjp) {
+        MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
+        Method method = methodSignature.getMethod();
+        CacheLock lock = method.getAnnotation(CacheLock.class);
+        if (!StringUtils.hasText(lock.prefix())) {
+            throw new RuntimeException("lock key is null...");
+        }
+        final String lockKey = cacheKeyGenerator.getLockKey(pjp);
+        try {
+            // 采用原生API来实现分布式锁
+            final Boolean success = lockRedisTemplate.execute((RedisCallback<Boolean>) connection -> connection.set(lockKey.getBytes(), new byte[0], Expiration.from(lock.expire(), lock.timeUnit()), RedisStringCommands.SetOption.SET_IF_ABSENT));
+            if (success == false) {
+                // TODO: 这里可以自定义异常
+                throw new RuntimeException("请勿重复请求");
+            }
+            try {
+                return pjp.proceed();
+            } catch (Throwable throwable) {
+                throw new RuntimeException("系统异常");
+            }
+        } finally {
+            // TODO: 如果演示的话需要注释该代码;实际应该放开
+             lockRedisTemplate.delete(lockKey);
+        }
+    }
 }
 ```
 

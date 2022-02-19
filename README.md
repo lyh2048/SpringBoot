@@ -26,6 +26,7 @@
     * [Spring Boot 整合 Quartz](#Spring-Boot-整合-Quartz)
     * [Spring Boot 分布式限流](#Spring-Boot-分布式限流)
     * [Spring Boot 分布式锁](#Spring-Boot-分布式锁)
+    * [封装属于自己的Spring-Boot-Starter](#封装属于自己的Spring-Boot-Starter)
 
 ## 简介
 
@@ -1069,3 +1070,19 @@ public class LockAspect {
 
 
 [⬆回到顶部](#内容)
+
+### 封装属于自己的Spring-Boot-Starter
+
+Starter是Spring Boot中的一个非常重要的概念，Starter相当于模块，它能将模块所需的依赖整合起来并对模块内的Bean根据环境（条件）进行自动配置。
+
+使用者只需要依赖相应功能的Starter，无需做过多的配置和依赖，Spring Boot就能自动扫描加载相应的模块并设置默认值，做到开箱即用。
+
+Starter命名规范
+
+- Spring官方Starter通常命名为`spring-boot-starter-{name}`
+- Spring官方建议非官方Starter命名应遵循`{name}-spring-boot-starter`
+
+
+
+[⬆回到顶部](#内容)
+
